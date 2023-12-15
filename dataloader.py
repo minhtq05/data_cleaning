@@ -6,7 +6,11 @@ import numpy as np
 
 class MedQuestionDataset(Dataset):
     def __init__(self, csv_file, root_dir):
-        self.data = pd.read_csv(csv_file)
+        if (type(csv_file) == str):
+            self.data = pd.read_csv(csv_file)
+        elif (type(csv_file) == list):
+            for file in csv_file:
+                self.data 
         self.root_dir = root_dir
 
     def __len__(self):
