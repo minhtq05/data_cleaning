@@ -5,7 +5,7 @@ import os
 import numpy as np
 
 
-# I will need a csv dataset file with: id; context; question; answers_text; answer_start.
+# a csv dataset file with: id; context; question; answers_text; answer_start;
 def clean(file_path):
     with open(file_path, 'r') as f:
         data = json.load(f)
@@ -14,9 +14,9 @@ def clean(file_path):
 
     df = pd.DataFrame(questions)
 
-    data = df[['id', 'snippets', 'body', 'snippets', 'snippets']]
-    data.columns = [
-        ['id', 'context', 'question', 'answer_text', 'answer_start']]
+    data = df[['id', 'body', 'ideal_answer', 'exact_answer', 'type']]
+    data = data.rename(columns={'body': 'question'})
+    # data.columns = [['id', 'context', 'question', 'answer_text', 'answer_start']]
 
     def process(x, sec):
         r = []
@@ -24,13 +24,17 @@ def clean(file_path):
             r.append(i[sec])
         return r
 
-    n_rows = len(data)
-    data.loc[:, 'answer_text'] = data.loc[:, 'answer_text'].map(
+    data.loc[:, 'answer_text'] = df.loc[:, 'snippets'].map(
         lambda x: process(x, 'text'))
-    data.loc[:, 'answer_start'] = data.loc[:, 'answer_start'].map(
+    data.loc[:, 'answer_start'] = df.loc[:, 'snippets'].map(
         lambda x: process(x, 'offsetInBeginSection'))
-    data.loc[:, 'context'] = data.loc[:, 'context'].map(
+    data.loc[:, 'context'] = df.loc[:, 'snippets'].map(
         lambda x: process(x, 'document'))
+    data.loc[:, 'exact_answer'] = data.loc[:, 'exact_answer'].map(
+        lambda x: (1 if x == 'yes' else 0) if x in ['yes', 'no'] else x)
+
+    data = data.reindex(columns=['id', 'context', 'question', 'answer_text',
+                        'answer_start', 'ideal_answer', 'exact_answer', 'type'])
 
     data.to_csv(file_path[:-4] + 'csv', index=False)
 
