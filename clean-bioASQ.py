@@ -14,7 +14,7 @@ def clean(file_path):
 
     df = pd.DataFrame(questions)
 
-    data = df[['id', 'documents', 'body', 'snippets', 'snippets']]
+    data = df[['id', 'snippets', 'body', 'snippets', 'snippets']]
     data.columns = [
         ['id', 'context', 'question', 'answer_text', 'answer_start']]
 
@@ -29,6 +29,8 @@ def clean(file_path):
         lambda x: process(x, 'text'))
     data.loc[:, 'answer_start'] = data.loc[:, 'answer_start'].map(
         lambda x: process(x, 'offsetInBeginSection'))
+    data.loc[:, 'context'] = data.loc[:, 'context'].map(
+        lambda x: process(x, 'document'))
 
     data.to_csv(file_path[:-4] + 'csv', index=False)
 
