@@ -5,7 +5,7 @@ import os
 import numpy as np
 
 
-# a csv dataset file with: id; context; question; answers_text; answer_start;
+# a csv dataset file with: id; context; question; answers_text; answer_start; ideal_answer; exact_answer; and type
 def clean(file_path):
     with open(file_path, 'r') as f:
         data = json.load(f)
